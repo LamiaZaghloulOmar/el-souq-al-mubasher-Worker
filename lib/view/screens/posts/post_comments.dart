@@ -87,25 +87,25 @@ class _PostCommentsState extends State<PostComments> {
                 ),
               ),
               contentPadding: EdgeInsets.all(
-                  0.0,
+                0.0,
               ),
               titlePadding: EdgeInsets.all(0),
-              title:Container(
-                height: 50,
+              title: Container(
+                  height: 50,
                   decoration: BoxDecoration(
-                                            color: Theme.of(context).primaryColor,
-                                           borderRadius: BorderRadius.only(
-      topLeft: Radius.circular(20),
-      topRight: Radius.circular(20),
-    ),),
-                padding: EdgeInsets.only(top: 15),
-                
-                child:  Text(
-                "تعديل التعليق",
-                textAlign: TextAlign.center,
-                
-                style: TextStyle(fontSize: 16.0,color: Theme.of(context).cardColor),
-              )),
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  padding: EdgeInsets.only(top: 15),
+                  child: Text(
+                    "تعديل التعليق",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 16.0, color: Theme.of(context).cardColor),
+                  )),
               content: Container(
                 height: 180,
                 child: SingleChildScrollView(
@@ -115,12 +115,14 @@ class _PostCommentsState extends State<PostComments> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      SizedBox(height: 15,),
+                      SizedBox(
+                        height: 15,
+                      ),
                       Container(
                         padding: const EdgeInsets.all(8.0),
                         child: TextField(
                           controller: text2form,
-                        keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'ادخل التعليق',
@@ -237,12 +239,17 @@ class _PostCommentsState extends State<PostComments> {
     getComments(widget.id);
   }
 
+  bool isloading = false;
   void getComments(id) async {
     setState(() {
       widget.isLoad = false;
+      isloading = true;
     });
     http.Response response = await http.get(Uri.parse(
         "${AppConstants.BASE_URL}${AppConstants.POST_COMMENTS}/${id.toString()}"));
+    setState(() {
+      isloading = false;
+    });
     if (response.statusCode == 200) {
       widget.postComments = [];
       jsonDecode(response.body)[0].forEach((e) {
@@ -256,430 +263,489 @@ class _PostCommentsState extends State<PostComments> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar:AppBar(
+        appBar: AppBar(
           centerTitle: true,
-          title: Text('العروض المقدمة',style: robotoRegular.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, 
-      color: Theme.of(context).cardColor,)),
+          title: Text('العروض المقدمة',
+              style: robotoRegular.copyWith(
+                fontSize: Dimensions.FONT_SIZE_LARGE,
+                color: Theme.of(context).cardColor,
+              )),
         ),
         //  CustomAppBar(
         //   title: "Comments",
         // ),
-        body: Column(
-          children: [
-            Expanded(
-              child: widget.postComments.isEmpty
-                  ? Center(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.comments_disabled_rounded, size: 30),
-                            Text("لا يوجد عروض مقدمة حتي الأن",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ]),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListView.separated(
-                        controller: scrollController,
-                        itemBuilder: ((contextu, index) {
-                          return Container(
-                            // color: Colors.red,
-                             decoration: BoxDecoration(
-                                            color: Theme.of(context).primaryColor,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10))),
-                            child:
-                           Stack(
-                            alignment: Alignment.centerRight,
-
-                            children: [
-                             Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                     borderRadius: BorderRadius.only(
-      topLeft: Radius.circular(10),
-      topRight: Radius.circular(10),
-    )
-                                    ),
-                              padding: EdgeInsets.only(bottom: 20,top: 5,right: 100,left: 10),
-                              child:  Row(
+        body: isloading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: widget.postComments.isEmpty
+                        ? Center(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  //  Column(
-                                  //   children: [
-                                      // Row(
-                                      //   children: [
-                                           Container(
-                                             padding: EdgeInsets.only(left:15,right:15),
-                                        width:
-                                            MediaQuery.of(context).size.width -
-                                                200,
-                                        child: Text(widget
-                                            .postComments[index].comment,
-                                            style: TextStyle(fontSize: 15,color: Colors.black),)),
-                                      //   ],
-                                      // ),
-                                     
-                                  //   ],
-                                  // ),
-                                  Spacer(),
-                                  if (int.parse(
-                                          widget.postComments[index].userId) ==
-                                      int.parse(CacheHelper.getData(
-                                          key: AppConstants.UserId)))
-                                    Container(
-                                     
-                                        child: Padding(
-                                            padding: EdgeInsets.all(0),
-                                            child: Container(
-                                              child: Row(children: [
-                                                PopupMenuButton(
-                                                  icon: Icon(Icons.more_vert,
-                                                      color: Colors.black),
-                                                  itemBuilder: (contextt) => [
-                                                    PopupMenuItem(
-                                                      // enabled: false,
-                                                      child: InkWell(
-                                                          onTap: () {
-                                                            showDataAlert(
-                                                                context:
-                                                                    context,
-                                                                id: widget
-                                                                    .postComments[
-                                                                        index]
-                                                                    .id,
-                                                                text: widget
-                                                                    .postComments[
-                                                                        index]
-                                                                    .comment,
-                                                                text2form:
-                                                                    text2form);
-                                                          },
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text("تعديل"),
-                                                            ],
-                                                          )),
-                                                    ),
-                                                    PopupMenuItem(
-                                                      onTap: () async {
-                                                        http.Response res =
-                                                            await http.post(
-                                                                Uri.parse(
-                                                                    "http://elsouqalmubasher.com/api/v1/services/delete-comment/${widget.postComments[index].id}"),
-                                                                body: {
-                                                              "token": CacheHelper
-                                                                  .getData(
-                                                                      key: AppConstants
-                                                                          .TOKEN),
-                                                            });
-                                                        if (res.statusCode ==
-                                                            200) {
-                                                          print("Deleted!");
-                                                          getComments(
-                                                              widget.id);
-                                                        }
-                                                      },
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text("مسح"),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              ]),
-                                            )))
-                                
-                                ],
-                              )),
-                              SizedBox(height: 3),
-                           Container(
-                             decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                     borderRadius: BorderRadius.only(
-      bottomLeft: Radius.circular(10),
-      bottomRight: Radius.circular(10),
-    )),
-                            
-                            child:   Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0, vertical: 15),
-                                child:Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 10,),
-                                   Row(
-                                  children: [
-
-                                      Text(
-                                              widget.postComments[index]
-                                                  .userLname??"",
-                                              style: TextStyle(
-                                                color: Theme.of(context).cardColor,
-                                                  fontWeight: FontWeight.bold)),
-                                          SizedBox(width: 2),
-                                          Text(
-                                              widget.postComments[index]
-                                                  .userFname??"",
-                                              style: TextStyle(
-                                                color: Theme.of(context).cardColor,
-                                                  fontWeight: FontWeight.bold)),
-                                 
-                                            Spacer(),
-                                    Container(
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context).primaryColor,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top:8.0,bottom: 10,left: 15,right: 15),
-                                          child: Text(
-                                              "${widget.postComments[index].price.toString()} ريال",
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                        )),
-                                  ],
-                                ),
-                                //  SizedBox(height: 3),
-                                     
-                                    Text( "${widget.postComments[index].updatedAt.split('T')[0]
-                                    +'  '+widget.postComments[index].updatedAt.split('T')[1].split('.')[0]}"
-                                     ,style: TextStyle(color: Theme.of(context).cardColor,), ),
-                                      
-                            ])
-                              )),
-                              // SizedBox(height: 3),
-                              // if (catController.postsList[index].image != null)
-                              //   InkWell(
-                              //     onTap: () {
-                              //       Navigator.push(context,
-                              //           MaterialPageRoute(builder: (_) {
-                              //         return FullImageScreen(
-                              //             '${AppConstants.BASE_URL}/storage/app/public/serviceorder/${catController.postsList[index].image}');
-                              //       }));
-                              //     },
-                              //     child: Hero(
-                              //       tag: 'imageHero',
-                              //       child: Container(
-                              //         height: 300,
-                              //         width: double.infinity,
-                              //         child: Image.network(
-                              //             '${AppConstants.BASE_URL}/storage/app/public/serviceorder/${catController.postsList[index].image}',
-                              //             fit: BoxFit.contain),
-                              //       ),
-                              //     ),
-                              //   )
-                              SizedBox(
-                                height: 1,
-                              ),
-                            ],
-                          ),
-                         Container(
-                          margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/1.5,
-                          bottom: 50),
-          // alignment: Alignment.centerRight,
-        child:   Container(
+                                  Icon(Icons.comments_disabled_rounded,
+                                      size: 30),
+                                  Text("لا يوجد عروض مقدمة حتي الأن",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                ]),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView.separated(
+                              controller: scrollController,
+                              itemBuilder: ((contextu, index) {
+                                return Container(
+                                    // color: Colors.red,
                                     decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 2,
-                                          color: Theme.of(context).cardColor),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    alignment: Alignment.center,
-                                    child:
-                                        ClipOval(
-                                      child: CustomImage(
-                                    image: widget.postComments[index].image==null|| widget.postComments[index].image.isEmpty?'https://www.w3schools.com/howto/img_avatar.png':
-                                        "${AppConstants.BASE_URL}/storage/app/public/delivery-man/${widget.postComments[index].image}",
-                                    height: 80,
-                                    width: 80,
-                                    fit: BoxFit.cover,
-                                  )),
-                                             
-         )),
-                          ]));
-                        }),
-                        separatorBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Divider(thickness: 1),
-                        ),
-                        itemCount: widget.postComments.length,
-                      ),
-                    ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 5.0,right: 10,left: 10),
-              child: Container(
-                padding: EdgeInsets.all(10),
-                // clipBehavior: Clip.antiAliasWithSaveLayer,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: Colors.grey)),
-                child:Column(children: [
-                   Container(
-                    padding: EdgeInsets.only(left:15,right:15),
-                    decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey)),
-                    // height: 100,
-                        child: TextFormField(
-                      decoration: InputDecoration(
-                        hintText: " اكتب تعليقك ...",
-                        contentPadding: EdgeInsets.only(left: 15),
-                        border: InputBorder.none,
-                      ),
-                      controller: textController,
-                    )),
-                    SizedBox(height: 10,),
-                    //  InkWell(
-                    //         child:
-                            Container(
-                               padding: EdgeInsets.only(left:15,right:15),
-                                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey)),
-                              child:
-                              TextFormField(
-                                keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: " اضف السعر",
-                        contentPadding: EdgeInsets.only(left: 15),
-                        border: InputBorder.none,
-                      ),
-                      controller: text22form,
-                    ) 
-                  
-                              // ),   
-                          ),
-                          SizedBox(height: 10,),
- ElevatedButton(
-  // color: Colors.red,
-                            child:Container(child:Center(child: Text("ارسال",style: TextStyle(fontSize: 15),)),
-                            width: MediaQuery.of(context).size.width,
-                            height: 45,
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10))),
+                                    child: Stack(
+                                        alignment: Alignment.centerRight,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                  decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade200,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topLeft:
+                                                            Radius.circular(10),
+                                                        topRight:
+                                                            Radius.circular(10),
+                                                      )),
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 20,
+                                                      top: 5,
+                                                      right: 100,
+                                                      left: 10),
+                                                  child: Row(
+                                                    children: [
+                                                      //  Column(
+                                                      //   children: [
+                                                      // Row(
+                                                      //   children: [
+                                                      Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 15,
+                                                                  right: 15),
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              200,
+                                                          child: Text(
+                                                            widget
+                                                                .postComments[
+                                                                    index]
+                                                                .comment,
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors
+                                                                    .black),
+                                                          )),
+                                                      //   ],
+                                                      // ),
+
+                                                      //   ],
+                                                      // ),
+                                                      Spacer(),
+                                                      if (int.parse(widget
+                                                              .postComments[
+                                                                  index]
+                                                              .userId) ==
+                                                          int.parse(CacheHelper
+                                                              .getData(
+                                                                  key: AppConstants
+                                                                      .UserId)))
+                                                        Container(
+                                                            child: Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(0),
+                                                                child:
+                                                                    Container(
+                                                                  child: Row(
+                                                                      children: [
+                                                                        PopupMenuButton(
+                                                                          icon: Icon(
+                                                                              Icons.more_vert,
+                                                                              color: Colors.black),
+                                                                          itemBuilder:
+                                                                              (contextt) => [
+                                                                            PopupMenuItem(
+                                                                              // enabled: false,
+                                                                              child: InkWell(
+                                                                                  onTap: () {
+                                                                                    showDataAlert(context: context, id: widget.postComments[index].id, text: widget.postComments[index].comment, text2form: text2form);
+                                                                                  },
+                                                                                  child: Row(
+                                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                                    children: [
+                                                                                      Text("تعديل"),
+                                                                                    ],
+                                                                                  )),
+                                                                            ),
+                                                                            PopupMenuItem(
+                                                                              onTap: () async {
+                                                                                http.Response res = await http.post(Uri.parse("http://elsouqalmubasher.com/api/v1/services/delete-comment/${widget.postComments[index].id}"), body: {
+                                                                                  "token": CacheHelper.getData(key: AppConstants.TOKEN),
+                                                                                });
+                                                                                if (res.statusCode == 200) {
+                                                                                  print("Deleted!");
+                                                                                  getComments(widget.id);
+                                                                                }
+                                                                              },
+                                                                              child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                children: [
+                                                                                  Text("مسح"),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        )
+                                                                      ]),
+                                                                )))
+                                                    ],
+                                                  )),
+                                              SizedBox(height: 3),
+                                              Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(10),
+                                                        bottomRight:
+                                                            Radius.circular(10),
+                                                      )),
+                                                  child: Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 30.0,
+                                                          vertical: 15),
+                                                      child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                    widget
+                                                                            .postComments[
+                                                                                index]
+                                                                            .userLname ??
+                                                                        "",
+                                                                    style: TextStyle(
+                                                                        color: Theme.of(context)
+                                                                            .cardColor,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            14)),
+                                                                SizedBox(
+                                                                    width: 2),
+                                                                Text(
+                                                                    widget
+                                                                            .postComments[
+                                                                                index]
+                                                                            .userFname ??
+                                                                        "",
+                                                                    style: TextStyle(
+                                                                        color: Theme.of(context)
+                                                                            .cardColor,
+                                                                        fontWeight:
+                                                                            FontWeight.bold)),
+
+                                                                // Spacer(),
+                                                                // Container(
+                                                                //     decoration: BoxDecoration(
+                                                                //         color: Theme.of(context).primaryColor,
+                                                                //         borderRadius: BorderRadius.all(
+                                                                //             Radius.circular(10))),
+                                                                //     child: Padding(
+                                                                //       padding: const EdgeInsets.only(top:8.0,bottom: 10,left: 15,right: 15),
+                                                                //       child: Text(
+                                                                //           "${widget.postComments[index].price.toString()} ريال",
+                                                                //           style: TextStyle(
+                                                                //               color: Colors.white)),
+                                                                //     )),
+                                                              ],
+                                                            ),
+                                                             SizedBox(height: 6),
+
+                                                            Text(
+                                                              "${widget.postComments[index].updatedAt.split('T')[0] + '  ' + widget.postComments[index].updatedAt.split('T')[1].split('.')[0]}",
+                                                              style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .cardColor,
+                                                              ),
+                                                            ),
+                                                          ]))),
+                                              // SizedBox(height: 3),
+                                              // if (catController.postsList[index].image != null)
+                                              //   InkWell(
+                                              //     onTap: () {
+                                              //       Navigator.push(context,
+                                              //           MaterialPageRoute(builder: (_) {
+                                              //         return FullImageScreen(
+                                              //             '${AppConstants.BASE_URL}/storage/app/public/serviceorder/${catController.postsList[index].image}');
+                                              //       }));
+                                              //     },
+                                              //     child: Hero(
+                                              //       tag: 'imageHero',
+                                              //       child: Container(
+                                              //         height: 300,
+                                              //         width: double.infinity,
+                                              //         child: Image.network(
+                                              //             '${AppConstants.BASE_URL}/storage/app/public/serviceorder/${catController.postsList[index].image}',
+                                              //             fit: BoxFit.contain),
+                                              //       ),
+                                              //     ),
+                                              //   )
+                                              
+                                            ],
+                                          ),
+                                          Container(
+                                              margin: EdgeInsets.only(
+                                                  left: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      1.5,
+                                                  bottom: 50),
+                                              // alignment: Alignment.centerRight,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 2,
+                                                      color: Theme.of(context)
+                                                          .cardColor),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                alignment: Alignment.center,
+                                                child: ClipOval(
+                                                    child: CustomImage(
+                                                  image: widget
+                                                                  .postComments[
+                                                                      index]
+                                                                  .image ==
+                                                              null ||
+                                                          widget
+                                                              .postComments[
+                                                                  index]
+                                                              .image
+                                                              .isEmpty
+                                                      ? 'https://www.w3schools.com/howto/img_avatar.png'
+                                                      : "${AppConstants.BASE_URL}/storage/app/public/delivery-man/${widget.postComments[index].image}",
+                                                  height: 70,
+                                                  width: 70,
+                                                  fit: BoxFit.cover,
+                                                )),
+                                              )),
+                                        ]));
+                              }),
+                              separatorBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Divider(thickness: 1),
+                              ),
+                              itemCount: widget.postComments.length,
                             ),
-                            onPressed: () async {
-                              if (textController.text.isNotEmpty) {
-                                if (text22form.text.isNotEmpty) {
-                                  http.Response res = await http.post(
-                                      Uri.parse(
-                                          "http://elsouqalmubasher.com/api/v1/services/service-comment"),
-                                      body: {
-                                        "order_id": widget.id.toString(),
-                                        "comment": textController.text,
-                                        "token": CacheHelper.getData(
-                                            key: AppConstants.TOKEN),
-                                        "price": text22form.text
+                          ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(bottom: 5.0, right: 10, left: 10),
+                    child: Container(
+                        padding: EdgeInsets.all(10),
+                        // clipBehavior: Clip.antiAliasWithSaveLayer,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.grey)),
+                        child: Column(
+                          children: [
+                            Container(
+                                padding: EdgeInsets.only(left: 15, right: 15),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.grey)),
+                                // height: 100,
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                    hintText: " اكتب تعليقك ...",
+                                    contentPadding: EdgeInsets.only(left: 15),
+                                    border: InputBorder.none,
+                                  ),
+                                  controller: textController,
+                                )),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            //  InkWell(
+                            //         child:
+                            Container(
+                                padding: EdgeInsets.only(left: 15, right: 15),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.grey)),
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    hintText: " اضف السعر",
+                                    contentPadding: EdgeInsets.only(left: 15),
+                                    border: InputBorder.none,
+                                  ),
+                                  controller: text22form,
+                                )
+
+                                // ),
+                                ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                              // color: Colors.red,
+                              child: Container(
+                                child: Center(
+                                    child: Text(
+                                  "ارسال",
+                                  style: TextStyle(fontSize: 15),
+                                )),
+                                width: MediaQuery.of(context).size.width,
+                                height: 45,
+                              ),
+                              onPressed: () async {
+                                if (textController.text.isNotEmpty) {
+                                  if (text22form.text.isNotEmpty) {
+                                    http.Response res = await http.post(
+                                        Uri.parse(
+                                            "http://elsouqalmubasher.com/api/v1/services/service-comment"),
+                                        body: {
+                                          "order_id": widget.id.toString(),
+                                          "comment": textController.text,
+                                          "token": CacheHelper.getData(
+                                              key: AppConstants.TOKEN),
+                                          "price": text22form.text
+                                        });
+                                    print(res.body);
+                                    if (res.statusCode == 200) {
+                                      setState(() {
+                                        textController.text = "";
+                                        text22form.text = "";
                                       });
-                                  print(res.body);
-                                  if (res.statusCode == 200) {
-                                    setState(() {
-                                      textController.text = "";
-                                      text22form.text = "";
-                                    });
-                                    print("Post Comment Success");
-                                    setState(() {
-                                      widget.isLoad = true;
-                                    });
-                                    getComments(widget.id);
-                                    // if (!scrollController.hasClients) {
-                                      
-                    //                  scrollController.animateTo(-500,
-                    // duration: Duration(seconds: 1), curve:Curves.easeOut);
-                                    // }
-                                  }else{
-                                     showCustomSnackBar("حدث خطا الرجاء المحاوله مرة اخري");
+                                      print("Post Comment Success");
+                                      setState(() {
+                                        widget.isLoad = true;
+                                      });
+                                      getComments(widget.id);
+                                      // if (!scrollController.hasClients) {
+
+                                      //                  scrollController.animateTo(-500,
+                                      // duration: Duration(seconds: 1), curve:Curves.easeOut);
+                                      // }
+                                    } else {
+                                      showCustomSnackBar(
+                                          "حدث خطا الرجاء المحاوله مرة اخري");
+                                    }
+                                  } else {
+                                    showCustomSnackBar(
+                                        "برجاء اضافة سعر الخدمة!");
                                   }
                                 } else {
-                                  showCustomSnackBar("برجاء اضافة سعر الخدمة!");
+                                  showCustomSnackBar(
+                                      "لا يمكن ارسال تعليق فارغ !");
                                 }
-                              } else {
-                                showCustomSnackBar(
-                                    "لا يمكن ارسال تعليق فارغ !");
-                              }
-                            },
-                          ),
-                ],)
-                
-                //  Row(
-                //   crossAxisAlignment: CrossAxisAlignment.end,
-                //   children: [
-                //     Expanded(
-                //         child: TextFormField(
-                //       decoration: InputDecoration(
-                //         hintText: " اكتب تعليقك ...",
-                //         contentPadding: EdgeInsets.only(left: 15),
-                //         border: InputBorder.none,
-                //       ),
-                //       controller: textController,
-                //     )),
-                //     Container(
-                //       color: Colors.blue,
-                //       child: Row(
-                //         children: [
-                //           SizedBox(width: 10),
-                //           InkWell(
-                //             child: Text("اضافة سعر",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
-                //             onTap: () async {
-                //               showData2Alert(
-                //                   context: context, text2form: text22form);
-                //             },
-                //           ),
-                //           IconButton(
-                //             icon: Icon(Icons.send,color: Colors.white),
-                //             onPressed: () async {
-                //               if (textController.text.isNotEmpty) {
-                //                 if (text22form.text.isNotEmpty) {
-                //                   http.Response res = await http.post(
-                //                       Uri.parse(
-                //                           "http://elsouqalmubasher.com/api/v1/services/service-comment"),
-                //                       body: {
-                //                         "order_id": widget.id.toString(),
-                //                         "comment": textController.text,
-                //                         "token": CacheHelper.getData(
-                //                             key: AppConstants.TOKEN),
-                //                         "price": text22form.text
-                //                       });
-                //                   print(res.statusCode);
-                //                   if (res.statusCode == 200) {
-                //                     setState(() {
-                //                       textController.text = "";
-                //                       text22form.text = "";
-                //                     });
-                //                     print("Post Comment Success");
-                //                     setState(() {
-                //                       widget.isLoad = true;
-                //                     });
-                //                     getComments(widget.id);
-                //                   }
-                //                 } else {
-                //                   showCustomSnackBar("برجاء اضافة سعر الخدمة!");
-                //                 }
-                //               } else {
-                //                 showCustomSnackBar(
-                //                     "لا يمكن ارسال تعليق فارغ !");
-                //               }
-                //             },
-                //           ),
-                //         ],
-                //       ),
-                    // ),
-                  // ],
-                // ),
-              ),
-            ),
-          ],
-        ));
-  }
-  ScrollController scrollController = ScrollController();
+                              },
+                            ),
+                          ],
+                        )
 
+                        //  Row(
+                        //   crossAxisAlignment: CrossAxisAlignment.end,
+                        //   children: [
+                        //     Expanded(
+                        //         child: TextFormField(
+                        //       decoration: InputDecoration(
+                        //         hintText: " اكتب تعليقك ...",
+                        //         contentPadding: EdgeInsets.only(left: 15),
+                        //         border: InputBorder.none,
+                        //       ),
+                        //       controller: textController,
+                        //     )),
+                        //     Container(
+                        //       color: Colors.blue,
+                        //       child: Row(
+                        //         children: [
+                        //           SizedBox(width: 10),
+                        //           InkWell(
+                        //             child: Text("اضافة سعر",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
+                        //             onTap: () async {
+                        //               showData2Alert(
+                        //                   context: context, text2form: text22form);
+                        //             },
+                        //           ),
+                        //           IconButton(
+                        //             icon: Icon(Icons.send,color: Colors.white),
+                        //             onPressed: () async {
+                        //               if (textController.text.isNotEmpty) {
+                        //                 if (text22form.text.isNotEmpty) {
+                        //                   http.Response res = await http.post(
+                        //                       Uri.parse(
+                        //                           "http://elsouqalmubasher.com/api/v1/services/service-comment"),
+                        //                       body: {
+                        //                         "order_id": widget.id.toString(),
+                        //                         "comment": textController.text,
+                        //                         "token": CacheHelper.getData(
+                        //                             key: AppConstants.TOKEN),
+                        //                         "price": text22form.text
+                        //                       });
+                        //                   print(res.statusCode);
+                        //                   if (res.statusCode == 200) {
+                        //                     setState(() {
+                        //                       textController.text = "";
+                        //                       text22form.text = "";
+                        //                     });
+                        //                     print("Post Comment Success");
+                        //                     setState(() {
+                        //                       widget.isLoad = true;
+                        //                     });
+                        //                     getComments(widget.id);
+                        //                   }
+                        //                 } else {
+                        //                   showCustomSnackBar("برجاء اضافة سعر الخدمة!");
+                        //                 }
+                        //               } else {
+                        //                 showCustomSnackBar(
+                        //                     "لا يمكن ارسال تعليق فارغ !");
+                        //               }
+                        //             },
+                        //           ),
+                        //         ],
+                        //       ),
+                        // ),
+                        // ],
+                        // ),
+                        ),
+                  ),
+                ],
+              ));
+  }
+
+  ScrollController scrollController = ScrollController();
 }

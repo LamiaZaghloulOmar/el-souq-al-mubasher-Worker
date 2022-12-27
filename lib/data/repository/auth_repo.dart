@@ -182,8 +182,8 @@ class AuthRepo {
   Future<bool> clearSharedData() async {
     if (!GetPlatform.isWeb) {
       await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.TOPIC);
-      FirebaseMessaging.instance.unsubscribeFromTopic(
-          sharedPreferences.getString(AppConstants.ZONE_TOPIC));
+      // FirebaseMessaging.instance.unsubscribeFromTopic(
+      //     sharedPreferences.getString(AppConstants.ZONE_TOPIC));
       apiClient.postData(AppConstants.TOKEN_URI,
           {"_method": "put", "token": getUserToken(), "fcm_token": '@'});
     }
