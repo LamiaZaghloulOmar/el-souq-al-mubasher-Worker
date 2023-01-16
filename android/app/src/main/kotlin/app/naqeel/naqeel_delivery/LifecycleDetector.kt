@@ -1,4 +1,4 @@
-package com.souq.souq_delivery
+package com.souq.souqapp_delivery
 
 import android.app.Activity
 import android.app.Application

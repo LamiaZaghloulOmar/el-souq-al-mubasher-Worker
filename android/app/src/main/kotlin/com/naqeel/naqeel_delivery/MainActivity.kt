@@ -1,4 +1,4 @@
-package com.souq.souq_delivery
+package com.souq.souqapp_delivery
 
 import android.content.Intent
 import android.os.Bundle
