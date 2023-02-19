@@ -1,4 +1,4 @@
-package com.souq.souqapp_delivery
+package com.souq.souq_delivery
 
 import android.app.Notification
 import android.app.NotificationChannel
